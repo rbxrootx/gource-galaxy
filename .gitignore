@@ -1,0 +1,5 @@
+dist/
+test/
+*.zip
+*.mp4
+*.ppm
