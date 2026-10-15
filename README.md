@@ -2,15 +2,13 @@
 
 <p align="center">
   <b>Your repository as a spiral galaxy.</b><br>
-  A fork of <a href="https://gource.io">Gource 0.53</a> with a raymarched 3D nebula background,<br>
-  spiral-arm directory layout, and a camera you can orbit and tilt.
+  A fork of <a href="https://gource.io">Gource 0.53</a> with a procedural nebula background<br>
+  and a spiral-arm directory layout.
 </p>
 
-<p align="center"><img src="docs/images/demo.gif" width="640" alt="Gource Galaxy tilting over a project"></p>
+<p align="center"><img src="docs/images/demo.gif" width="640" alt="Gource Galaxy growing a project"></p>
 
-| Top-down | Tilted 55° | Nearly edge-on |
-|---|---|---|
-| <img src="docs/images/top.png"> | <img src="docs/images/tilt.png"> | <img src="docs/images/edge.png"> |
+<p align="center"><img src="docs/images/top.png" width="800"></p>
 
 > Stock Gource for comparison: [docs/images/stock.png](docs/images/stock.png)
 
@@ -22,16 +20,16 @@ Everything Gource does still works: git, svn, hg, bzr and custom logs, video out
 
 ### 1. A volumetric galaxy background
 
-The background is a fragment shader that raymarches a 3D density field through **Gource's real camera matrices**. It is not a flat image behind the scene.
+The background is a fragment shader that raymarches a density field through **Gource's real camera**, so it zooms and pans with the tree. It is not a flat image behind the scene.
 
 - A thin, flared **disc** with exponential falloff in radius and height
 - A glowing **bulge** core
-- **Spiral arms** from a logarithmic spiral, warped with 3D noise so they look clumpy rather than geometric
+- **Spiral arms** from a logarithmic spiral, warped with noise so they look clumpy rather than geometric
 - **Dust lanes** on the inner edge of each arm that absorb the light behind them
 - Pink **star-forming knots** inside the arms, warm yellow-white inner stars and blue outer arms
-- A **skybox** of distant gas clouds and three layers of twinkling stars, fixed in direction so they hold still while you orbit
+- Distant gas clouds and three layers of twinkling stars
 
-The volume lives in the same plane as the tree (world `z = 0`), so tilting the camera shows a proper 3D disc with the tree sitting on it.
+The galaxy lies in the same plane as the tree (world `z = 0`), so the arms sit underneath the directories that follow them.
 
 ### 2. Spiral-arm layout
 
@@ -45,14 +43,10 @@ angle = arm_angle + twist * ln(1 + depth * 80 / r0)
 
 It deliberately does *not* depend on where the directory currently is. An earlier version aimed at the arm angle for the directory's current radius. Growing branches then chased a moving target and swung around like orbiting blobs. Depth-based targets keep the layout still.
 
-### 3. Orbit and tilt
-
-**Right-drag** orbits and tilts the camera around whatever it is looking at. The background reads the camera from the live modelview matrix, so it stays correct at any angle. Right-drag used to rotate the tree; `--no-galaxy` restores that.
-
-### 4. Calmer defaults
+### 3. Calmer defaults
 
 - Bloom is lower (`--bloom-multiplier 0.6`, `--bloom-intensity 0.5`) so dense directories don't blow out to white.
-- Auto-rotate is off in galaxy mode, because it spins the whole tree and fights the arms.
+- Auto-rotate is off in galaxy mode, because it spins the whole tree and fights the arms. Right-drag still rotates the tree by hand.
 
 ---
 
@@ -79,10 +73,8 @@ gource-galaxy.bat demo.log
 | `--galaxy-pull F` | `1.5` | How hard directories are pulled onto an arm |
 | `--galaxy-width F` | `0.28` | Half width of an arm in radians. No pull inside it |
 | `--galaxy-spin F` | `0` | Rotation of the arm pattern, radians per second |
-| `--galaxy-tilt DEG` | `0` | Start tilted away from top-down |
-| `--galaxy-orbit DEG` | `0` | Start orbited around the galaxy |
 | `--nebula-brightness F` | `1.0` | Background brightness |
-| `--no-galaxy` | | Stock layout and right-drag rotation |
+| `--no-galaxy` | | Stock layout (auto-rotate comes back) |
 | `--no-nebula` | | Stock flat background |
 
 Run `gource --help -H` for the full list.
@@ -97,8 +89,6 @@ Six arms with a tighter twist (`--galaxy-arms 6 --galaxy-twist 2.6`):
 gource.exe C:\path\to\repo -1920x1080 -r 60 --output-ppm-stream - ^
   | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -c:v libx264 -pix_fmt yuv420p galaxy.mp4
 ```
-
-Use `--galaxy-tilt` and `--galaxy-orbit` to pick the viewing angle, since right-drag only works in the live window.
 
 ---
 
@@ -129,15 +119,13 @@ Notes:
 |---|---|
 | `src/src/galaxy.h`, `galaxy.cpp` | New. Layout force, arm assignment, the background shader and its camera plumbing |
 | `src/src/dirnode.cpp` | Calls `galaxyForce` from `applyForces` |
-| `src/src/zoomcamera.cpp` | Orbit and tilt applied in view space, before the look-at |
-| `src/src/gource.cpp` | Draws the background, feeds it the camera and galaxy radius, right-drag orbit |
+| `src/src/gource.cpp` | Draws the background, feeds it the camera and galaxy radius |
 | `src/src/gource_settings.cpp` | New options, dimmer bloom defaults, `extension()` fix |
 
 ## Known issues
 
 - With few, large top-level directories you get a ring of clusters around the core more than long arms. The background arms are the main spiral cue. More top-level directories, `--galaxy-pull` and `--galaxy-width` help.
 - The background arms follow a spiral in world radius, while the layout aims by directory depth, so the two line up loosely rather than exactly.
-- Mouse hover and click picking are not corrected for tilt, so they can be off when tilted.
 - The raymarcher costs GPU time at high resolutions. 1080p is fine on a mid-range card; 4K recording wants something stronger.
 - Tested on Windows 11 only.
 

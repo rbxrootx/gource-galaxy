@@ -20,8 +20,6 @@ struct GalaxyConfig {
     float spin;        // arm rotation speed (radians per second)
     float brightness;  // nebula brightness multiplier
     float time;        // accumulated simulation time
-    float yaw;         // camera orbit around the galaxy, degrees
-    float pitch;       // camera tilt away from top-down, degrees
 
     GalaxyConfig();
 };

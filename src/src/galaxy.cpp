@@ -20,8 +20,6 @@ GalaxyConfig::GalaxyConfig() {
     spin       = 0.0f;
     brightness = 1.0f;
     time       = 0.0f;
-    yaw        = 0.0f;
-    pitch      = 0.0f;
 }
 
 //---------------------------------------------------------------- layout
@@ -95,8 +93,8 @@ static const char* GALAXY_VERT =
     "void main() { gl_Position = gl_Vertex; }\n";
 
 // A volume raymarched through the real Gource camera. The galaxy lies in the
-// z = 0 plane of the world, the same plane the tree is laid out in, so orbiting
-// or tilting the camera shows a proper 3D disc with a bulge and dust lanes,
+// z = 0 plane of the world, the same plane the tree is laid out in, so a camera looking down on it
+// sees a disc with a bulge and dust lanes,
 // and the arms stay under the directories that follow them.
 static const char* GALAXY_FRAG =
     "#version 120\n"
@@ -157,7 +155,7 @@ static const char* GALAXY_FRAG =
     "    vec3 rd  = normalize(uFwd + ndc.x * uTan.x * uRight + ndc.y * uTan.y * uUp);\n"
     "    vec3 ro  = uCam - vec3(uGC, 0.0);\n"
     "\n"
-    "    // sky: distant gas and stars, fixed in direction so they hold still while you orbit\n"
+    "    // sky: distant gas and stars, fixed in direction so they hold still as the camera moves\n"
     "    float g1 = fbm5(rd * 2.2 + 3.0);\n"
     "    float g2 = fbm5(rd * 4.0 + g1 * 1.6 + 11.0);\n"
     "    vec3 col = vec3(0.0);\n"

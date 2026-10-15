@@ -119,8 +119,6 @@ if(extended_help) {
     printf("  --galaxy-pull FLOAT      How hard dirs are pulled onto an arm (default: 1.5)\n");
     printf("  --galaxy-width FLOAT     Half width of an arm in radians (default: 0.28)\n");
     printf("  --galaxy-spin FLOAT      Rotation of the arms, radians per second (default: 0)\n");
-    printf("  --galaxy-tilt DEGREES    Start tilted away from top-down (right-drag orbits and tilts)\n");
-    printf("  --galaxy-orbit DEGREES   Start orbited around the galaxy\n");
     printf("  --nebula-brightness FLOAT  Brightness of the background (default: 1.0)\n");
     printf("  --no-galaxy              Use the normal Gource layout\n");
     printf("  --no-nebula              Use the normal flat background\n\n");
@@ -307,8 +305,6 @@ GourceSettings::GourceSettings() {
     arg_types["galaxy-pull"]       = "float";
     arg_types["galaxy-width"]      = "float";
     arg_types["galaxy-spin"]       = "float";
-    arg_types["galaxy-tilt"]       = "float";
-    arg_types["galaxy-orbit"]      = "float";
     arg_types["nebula-brightness"] = "float";
 
     arg_types["bloom-intensity"]   = "float";
@@ -1038,20 +1034,6 @@ void GourceSettings::importGourceSettings(ConfFile& conffile, ConfSection* gourc
         if(!entry->hasValue()) conffile.entryException(entry, "specify galaxy-spin (float)");
 
         gGalaxy.spin = entry->getFloat();
-    }
-
-    if((entry = gource_settings->getEntry("galaxy-tilt")) != 0) {
-
-        if(!entry->hasValue()) conffile.entryException(entry, "specify galaxy-tilt (degrees)");
-
-        gGalaxy.pitch = entry->getFloat();
-    }
-
-    if((entry = gource_settings->getEntry("galaxy-orbit")) != 0) {
-
-        if(!entry->hasValue()) conffile.entryException(entry, "specify galaxy-orbit (degrees)");
-
-        gGalaxy.yaw = entry->getFloat();
     }
 
     if((entry = gource_settings->getEntry("nebula-brightness")) != 0) {

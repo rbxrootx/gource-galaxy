@@ -364,13 +364,6 @@ void Gource::mouseMove(SDL_MouseMotionEvent *e) {
         //if right mouse button is held while dragging, rotate tree instead of
         //moving camera
 
-        //galaxy mode: right drag orbits and tilts the camera around the galaxy
-        if(rightmouse && gGalaxy.layout) {
-            gGalaxy.yaw   += mag.x * 0.35f;
-            gGalaxy.pitch  = std::max(-80.0f, std::min(80.0f, gGalaxy.pitch + mag.y * 0.35f));
-            return;
-        }
-
         if(rightmouse) {
             manual_rotate = true;
             if(fabs(mag.x) > fabs(mag.y)) {
@@ -2443,10 +2436,7 @@ void Gource::draw(float t, float dt) {
         return;
     }
 
-    //the orbit/tilt is applied after the frustum is built, so widen it while tilted
-    float frustum_fov = std::min(150.0f, camera.getFOV() + fabsf(gGalaxy.pitch) * 1.2f);
-
-    Frustum frustum(camera.getPos(), camera.getTarget(), camera.getUp(), frustum_fov, camera.getZNear(), camera.getZFar());
+    Frustum frustum(camera.getPos(), camera.getTarget(), camera.getUp(), camera.getFOV(), camera.getZNear(), camera.getZFar());
 
     trace_time = SDL_GetTicks();
 

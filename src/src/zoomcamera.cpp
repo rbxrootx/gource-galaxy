@@ -16,7 +16,6 @@
 */
 
 #include "zoomcamera.h"
-#include "galaxy.h"
 
 ZoomCamera::ZoomCamera() {
 }
@@ -80,17 +79,6 @@ void ZoomCamera::lookAt(const vec3& target) {
 
 void ZoomCamera::focus() {
     display.mode3D(fov, znear, zfar);
-
-    //orbit and tilt around the point the camera looks at. This acts in view
-    //space, so it has to go in before the look-at matrix.
-    if(gGalaxy.yaw != 0.0f || gGalaxy.pitch != 0.0f) {
-        float d = glm::length(pos - target);
-
-        glTranslatef(0.0f, 0.0f, -d);
-        glRotatef(gGalaxy.pitch, 1.0f, 0.0f, 0.0f);
-        glRotatef(gGalaxy.yaw,   0.0f, 0.0f, 1.0f);
-        glTranslatef(0.0f, 0.0f, d);
-    }
 
     look();
 }
